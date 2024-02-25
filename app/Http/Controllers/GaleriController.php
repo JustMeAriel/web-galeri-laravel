@@ -36,7 +36,7 @@ class GaleriController extends Controller
             'featured_image' => $featuredImage,
         ]);
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri created successfully!');
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dibua>//<!');
     }
 
     public function show($id)
@@ -72,7 +72,7 @@ class GaleriController extends Controller
             $galeri->update(['featured_image' => $featuredImage]);
         }
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri updated successfully!');
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil DiUpdate!');
     }
 
     public function destroy($id)
@@ -80,6 +80,6 @@ class GaleriController extends Controller
         $galeri = Galeri::findOrFail($id);
         File::delete(public_path('images/' . $galeri->featured_image));
         $galeri->delete();
-        return redirect()->route('galeri.index')->with('success', 'Galeri deleted successfully!');
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dihapus!');
     }
 }
