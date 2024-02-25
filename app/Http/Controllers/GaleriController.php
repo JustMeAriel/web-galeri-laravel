@@ -12,13 +12,11 @@ class GaleriController extends Controller
     {
         $data = Galeri::orderByDesc('id')->get();
         return view('galeri.index', compact('data'));
-        
     }
 
     public function create()
     {
         return view('galeri.create');
-
     }
 
     public function store(Request $request)
@@ -29,34 +27,28 @@ class GaleriController extends Controller
             'featured_image' => 'required|image|mimes:jpeg,png,jpg|max:20048',
         ]);
 
-        // Mengambil nama asli dari file
-        $featured_image = $request->file('featured_image')->getClientOriginalName();
-
-        // Menyimpan nama file ke folder images
-        $request->file('featured_image')->move(public_path('images'), $featured_image);
+        $featuredImage = $request->file('featured_image')->getClientOriginalName();
+        $request->file('featured_image')->move(public_path('images'), $featuredImage);
 
         Galeri::create([
             'title' => $request->input('title'),
             'content' => $request->input('content'),
-            'featured_image' => $featured_image,
+            'featured_image' => $featuredImage,
         ]);
 
         return redirect()->route('galeri.index')->with('success', 'Galeri created successfully!');
-
     }
 
     public function show($id)
     {
         $galeri = Galeri::findOrFail($id);
         return view('galeri.show', compact('galeri'));
-
     }
 
     public function edit($id)
     {
         $galeri = Galeri::findOrFail($id);
         return view('galeri.edit', compact('galeri'));
-
     }
 
     public function update(Request $request, $id)
@@ -68,7 +60,6 @@ class GaleriController extends Controller
         ]);
 
         $galeri = Galeri::findOrFail($id);
-
         $galeri->update([
             'title' => $request->input('title'),
             'content' => $request->input('content'),
@@ -76,28 +67,19 @@ class GaleriController extends Controller
 
         if ($request->hasFile('featured_image')) {
             File::delete(public_path('images/' . $galeri->featured_image));
-
             $featuredImage = $request->file('featured_image')->getClientOriginalName();
             $request->file('featured_image')->move(public_path('images'), $featuredImage);
-
             $galeri->update(['featured_image' => $featuredImage]);
         }
 
         return redirect()->route('galeri.index')->with('success', 'Galeri updated successfully!');
-
     }
 
     public function destroy($id)
     {
         $galeri = Galeri::findOrFail($id);
-
-        $filePath = public_path('images/' . $galeri->featured_image);
-        File::delete($filePath);
-
+        File::delete(public_path('images/' . $galeri->featured_image));
         $galeri->delete();
-
         return redirect()->route('galeri.index')->with('success', 'Galeri deleted successfully!');
-
     }
-
 }

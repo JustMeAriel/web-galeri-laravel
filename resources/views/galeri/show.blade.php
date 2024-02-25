@@ -14,7 +14,8 @@
             <button type="submit" class="btn btn-danger mt-3">Delete</button>
 
             {{-- Update Button --}}
-            <a href="{{ route('galeri.edit', ['id' => $galeri->id] ) }}" class="btn btn-warning mt-3">Edit</a>
+            <a href="{{ route('galeri.edit', ['id' => $galeri->id]) }}" type="button" class="btn btn-primary mt-3">Edit</a>
+
         </form>
     </div>
 </div>
