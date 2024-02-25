@@ -36,7 +36,7 @@ class GaleriController extends Controller
             'featured_image' => $featuredImage,
         ]);
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dibua>//<!');
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dibuat>//<!');
     }
 
     public function show($id)
