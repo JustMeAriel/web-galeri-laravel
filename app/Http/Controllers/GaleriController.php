@@ -27,17 +27,34 @@ class GaleriController extends Controller
             'featured_image' => 'required|image|mimes:jpeg,png,jpg|max:20048',
         ]);
 
-        $featuredImage = $request->file('featured_image')->getClientOriginalName();
-        $request->file('featured_image')->move(public_path('images'), $featuredImage);
-
-        Galeri::create([
+        $galeriData = [
             'title' => $request->input('title'),
             'content' => $request->input('content'),
-            'featured_image' => $featuredImage,
-        ]);
+        ];
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dibuat>//<!');
+        if ($request->hasFile('featured_image') && $request->file('featured_image')->isValid()) {
+            $originalFileName = $request->file('featured_image')->getClientOriginalName();
+            $directory = public_path('images');
+            $counter = 1;
+
+            $name = pathinfo($originalFileName, PATHINFO_FILENAME);
+            $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+            $fileName = $originalFileName;
+
+            while (file_exists($directory . '/' . $fileName)) {
+                $fileName = $name . '(' . $counter . ').' . $extension;
+                $counter++;
+            }
+
+            $request->file('featured_image')->move($directory, $fileName);
+            $galeriData['featured_image'] = $fileName;
+        }
+
+        Galeri::create($galeriData);
+
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dibuat.');
     }
+
 
     public function show($id)
     {
@@ -72,7 +89,7 @@ class GaleriController extends Controller
             $galeri->update(['featured_image' => $featuredImage]);
         }
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil DiUpdate!');
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil DiUpdate.');
     }
 
     public function destroy($id)
@@ -80,6 +97,6 @@ class GaleriController extends Controller
         $galeri = Galeri::findOrFail($id);
         File::delete(public_path('images/' . $galeri->featured_image));
         $galeri->delete();
-        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dihapus!');
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Dihapus.');
     }
 }

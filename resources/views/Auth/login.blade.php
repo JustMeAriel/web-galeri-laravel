@@ -3,7 +3,7 @@
 @section('scripts')
 @section('content')
     <div class="container mt-5">
-        <div class="card shadow">
+        <div class="card shadow mx-5">
             <div class="card-body">
                 @if(session('success'))
                     <div id="successAlert" class="alert alert-success" role="alert">
