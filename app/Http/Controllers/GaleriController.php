@@ -68,29 +68,57 @@ class GaleriController extends Controller
         return view('galeri.edit', compact('galeri'));
     }
 
+
     public function update(Request $request, $id)
     {
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'featured_image' => 'image|mimes:jpeg,png,jpg|max:20048',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:20048',
         ]);
 
+        // Retrieve the current image file name from the database
         $galeri = Galeri::findOrFail($id);
-        $galeri->update([
+        $currentImage = $galeri->featured_image;
+
+        $galeriData = [
             'title' => $request->input('title'),
             'content' => $request->input('content'),
-        ]);
+        ];
 
-        if ($request->hasFile('featured_image')) {
-            File::delete(public_path('images/' . $galeri->featured_image));
-            $featuredImage = $request->file('featured_image')->getClientOriginalName();
-            $request->file('featured_image')->move(public_path('images'), $featuredImage);
-            $galeri->update(['featured_image' => $featuredImage]);
+        // Check if an image is provided for update
+        if ($request->hasFile('featured_image') && $request->file('featured_image')->isValid()) {
+            $originalFileName = $request->file('featured_image')->getClientOriginalName();
+            $directory = public_path('images');
+            $counter = 1;
+
+            $name = pathinfo($originalFileName, PATHINFO_FILENAME);
+            $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+            $fileName = $originalFileName;
+
+            // Generate a unique filename if it already exists
+            while (file_exists($directory . '/' . $fileName)) {
+                $fileName = $name . '(' . $counter . ').' . $extension;
+                $counter++;
+            }
+
+            // Move and save the new image
+            $request->file('featured_image')->move($directory, $fileName);
+            $galeriData['featured_image'] = $fileName;
+
+            // Delete the current image file if it exists
+            if ($currentImage && File::exists($directory . '/' . $currentImage)) {
+                File::delete($directory . '/' . $currentImage);
+            }
         }
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil DiUpdate.');
+        // Update existing record
+        $galeri->update($galeriData);
+
+        return redirect()->route('galeri.index')->with('success', 'Galeri Berhasil Diperbarui.');
     }
+
+
 
     public function destroy($id)
     {
