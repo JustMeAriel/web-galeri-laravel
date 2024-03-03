@@ -9,7 +9,7 @@ class Galeri extends Model
 {
     use HasFactory;
 
-    protected $table = 'table_galeri';
+    protected $table = 'galeri';
     
     protected $fillable = 
     ['title', 
