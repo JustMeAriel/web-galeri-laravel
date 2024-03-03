@@ -21,14 +21,28 @@
                 </div>
 
                 <div class="mb-3">
+                    <img src="{{ asset('images/' . $galeri->featured_image) }}" alt="{{ $galeri->title }}" name="recent_images" class="mt-3 rounded-3" style="max-width: 30%;" >
+                </div>
+
+                <div class="mb-3">
                     <label for="featured_image" class="form-label">New Featured Image</label>
-                    <input type="file" class="form-control" id="featured_image" name="featured_image">
+                    <input type="file" class="form-control" id="featured_image" name="featured_image" required
+                        onchange="previewImage()">
+                    <img id="featured_image_preview" class="mt-3 rounded-3" style="max-width: 30%;">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Update</button>
                 <a href="{{ route('galeri.index') }}" type="button" class="btn btn-warning">Kembali</a>
 
             </form>
+            <script>
+                document.getElementById('featured_image').onchange = function (evt) {
+                    const [file] = this.files
+                    if (file) {
+                        document.getElementById('featured_image_preview').src = URL.createObjectURL(file)
+                    }
+                }
+            </script>
         </div>
     </div>
 </div>
